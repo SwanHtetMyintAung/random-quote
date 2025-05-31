@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Best Quote</title>
+</head>
+<body>
+    <a href="/saved.html">To Saved</a>
+    <div class="container mx-auto h-screen flex flex-col items-center justify-center">
+        <div id="noti" class="w-40 h-10 bg-green-700 text-white text-center line text-20 pt-2 mb-8 opacity-0">Saved!!</div>
+        <p id="quote" class="block p-6 bg-gray-500 text-3xl text-white w-9/12 mx-auto">
+            <span id="quote-text" class="block mb-2"></span>
+            <small id="quote-author" class="block text-lg text-gray-200"></small>
+        </p>
+        <div class="button-container">
+            <button id="quote-generator" class="button bg-blue-400 rounded-xl w-56 h-8 text-white my-4 ">
+                Generate a quote
+            </button>
+            <button id="save-quote" class="disabled:opacity-50 button bg-blue-400 rounded-xl w-56 h-8 text-white my-4 ">
+                Save this to storage
+            </button>
+        </div>
+    </div>
+</body>
+    <script>
+        const quote = document.getElementById("quote-text");
+        const author = document.getElementById("quote-author");
+        const quoteGenerator = document.getElementById("quote-generator");
+        const quoteSaver = document.getElementById("save-quote");
+        const noti = document.getElementById("noti")
+        
+        quote.textContent = 'Loading...';
+        author.textContent = 'Loading...';
+
+        const populateQuote = () =>{
+            quote.textContent = 'Loading'
+
+            fetch('https://dummyjson.com/quotes/random')
+            .then(res => res.json())
+            .then(res => {
+                quote.textContent = res.quote;
+                author.textContent = "-"+res.author;
+            })
+            .catch(err => console.log(err))
+            quoteSaver.removeAttribute("disabled")
+        }
+        const saveQuote = () =>{
+            const existing = JSON.parse(localStorage.getItem("quotes")) || [];
+            if(quote.textContent.toLowerCase().includes("loading")) return;
+            const hasIt = existing.some((q)=> q.quote === quote.textContent && q.author === author.textContent)
+            if(hasIt) return;
+            existing.push({
+                quote:quote.textContent,
+                author:author.textContent
+            })
+            localStorage.setItem("quotes",JSON.stringify(existing));
+            noti.classList.remove("opacity-0");
+            quoteSaver.setAttribute("disabled",true)
+        }
+        window.addEventListener("load",populateQuote)
+        window.addEventListener("click", (e) => {
+            if (e.target !== quoteSaver) noti.classList.add("opacity-0");    
+        })
+        quoteGenerator.addEventListener("click",populateQuote)
+        quoteSaver.addEventListener("click",saveQuote)
+    </script>
+</html>

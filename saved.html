@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved quotes</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body>
+    <a href="/index.html">Go Back</a>
+    <div class="container mx-auto  flex flex-col items-center">
+        <h1 class="text-center ">Saved Quotes</h1>    
+        <div id="saved-quotes" class="w-full">
+            <table class="w-9/12 mx-auto px-4 text-gray-900 bg-gray-50">
+                <thead class="w-full">
+                    <tr class="w-full">
+                        <th class="w-9/12 font-2xl py-4">Quote</th>
+                        <th>Author</th>
+                    </tr>
+                </thead>
+                <tbody id="table" class="">
+
+                </tbody>
+            </table>
+        </div>
+        <button id="quote-delete" class="w-8/12 h-10 rounded-lg mx-auto mt-8 text-white bg-red-800">Delete All Quote</button>
+        
+    </div>
+    <div class="h-16 invisible"></div>
+</body>
+<script>
+    const savedQuotes = document.getElementById("saved-quotes");
+    const table = document.getElementById("table");
+    const deleteAll = document.getElementById("quote-delete")
+
+    function createQuote({author,quote}){
+        const row = document.createElement('tr');
+        row.className = "odd:bg-gray-400 "
+        const quoteCell = document.createElement('td');
+        const authorCell = document.createElement('td');
+        authorCell.className = "py-8 text-center"
+        quoteCell.className = "px-4"
+        quoteCell.textContent = quote;
+        authorCell.textContent = author;
+        row.appendChild(quoteCell);
+        row.appendChild(authorCell);
+        return row;
+    }
+    const populateQuotesFromStorage = () =>{
+
+        const data = JSON.parse(localStorage.getItem("quotes"));
+        for(let i=0;i<data.length;i++){
+            const {quote,author} = data[i];
+            // const quote = localStorage.getItem(author);
+            const newRow = createQuote({author,quote});
+            table.appendChild(newRow)
+        }
+    }
+
+    window.addEventListener("load",populateQuotesFromStorage);
+    deleteAll.addEventListener("click",()=>{
+        localStorage.clear();
+        window.location.reload()
+    })
+</script>
+</html>
